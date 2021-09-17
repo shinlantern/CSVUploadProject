@@ -65,15 +65,19 @@
             headRow += "</tr>";
             $("#csvTbl tbody").append(headRow);
 
-
+            console.log(csvData)
 
             $.each(csvData, function (i, el) {
                 var row = $("<tr/>");
+                var lastItem = null;
                 $.each(el, function (j, cell) {
+                    lastItem = cell;
                     if (cell !== "")
                         row.append($("<td/>").text(cell));
                 });
-                $("#csvTbl tbody").append(row);
+
+                if (lastItem)
+                    $("#csvTbl tbody").append(row);
             });
         }
 
