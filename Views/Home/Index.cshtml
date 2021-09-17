@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Upload any .csv file to be displayed in the table below.</p>
+</div>
+
+<div class="input-group mb-3">
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="AttachementFile" accept=".csv">
+        <label class="custom-file-label" for="AttachementFile" aria-describedby="AttachementFileAddon">Choose file</label>
+    </div>
+    <div class="input-group-append">
+        <span class="input-group-text" id="AttachmentFileUploadBtn">Upload</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <label>CSV file content</label>
+        <table class="table table-dark" id="csvTbl" name="csvTbl">
+            <tbody>
+                <tr>
+                    <td class="text-center">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{ 
+<script>
+    var file;
+    $(document).ready(function () {
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+
+        $("#AttachementFile").change(function (evt) {
+            file = evt.target.files[0];
+            var validTypes = ["csv"];
+            var ext = file.name.substring(file.name.lastIndexOf('.') + 1, file.name.length);
+
+            if (!validTypes.some(x => x == ext.toLowerCase())) {
+                file = null;
+                alert("Invalid file type!.");
+                $(".custom-file-input").siblings(".custom-file-label").addClass("selected").html("");
+            }
+        });
+
+        PopulateTable = function (csvData) {
+            $("#csvTbl tbody").empty();
+
+            var head = Object.getOwnPropertyNames(csvData[0]);
+            var headRow = "<tr>";
+            $.each(head, function (i, el) {
+                var htd = "<td>" + el + "</td>";
+                headRow += htd;
+            });
+            headRow += "</tr>";
+            $("#csvTbl tbody").append(headRow);
+
+
+
+            $.each(csvData, function (i, el) {
+                var row = $("<tr/>");
+                $.each(el, function (j, cell) {
+                    if (cell !== "")
+                        row.append($("<td/>").text(cell));
+                });
+                $("#csvTbl tbody").append(row);
+            });
+        }
+
+        $("#AttachmentFileUploadBtn").on("click", function () {
+            if (file) {
+                Papa.parse(file, {
+                    header: true,
+                    dynamicTyping: true,
+                    complete: function (results) {
+                        data = results;
+                        PopulateTable(data.data);
+                    }
+                });
+            }
+            else {
+                alert("Empty file!");
+            }
+        });
+    });
+</script>
+}
