@@ -41,13 +41,15 @@
 
         $("#AttachementFile").change(function (evt) {
             file = evt.target.files[0];
-            var validTypes = ["csv"];
-            var ext = file.name.substring(file.name.lastIndexOf('.') + 1, file.name.length);
+            if (file) {
+                var validTypes = ["csv"];
+                var ext = file.name.substring(file.name.lastIndexOf('.') + 1, file.name.length);
 
-            if (!validTypes.some(x => x == ext.toLowerCase())) {
-                file = null;
-                alert("Invalid file type!.");
-                $(".custom-file-input").siblings(".custom-file-label").addClass("selected").html("");
+                if (!validTypes.some(x => x == ext.toLowerCase())) {
+                    file = null;
+                    alert("Invalid file type!.");
+                    $(".custom-file-input").siblings(".custom-file-label").addClass("selected").html("");
+                }
             }
         });
 
